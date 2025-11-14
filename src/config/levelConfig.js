@@ -9,7 +9,7 @@ export const LEVELS = {
   1: {
     name: "Jungle Jam",
     // Using solid color backgrounds as fallback
-    background: null, // We'll draw this with canvas
+    background: '/assets/backgrounds/background-jungle.png',
     backgroundColor: '#2d5016', // Dark green jungle color
     playerStart: { x: 50, y: 350 },
     door: { x: 740, y: 340 },
@@ -41,7 +41,7 @@ export const LEVELS = {
   
   2: {
     name: "Cave Crisis",
-    background: null,
+    background: '/assets/backgrounds/background-jungle.png',
     backgroundColor: '#1a1a2e',
     playerStart: { x: 50, y: 350 },
     door: { x: 740, y: 340 },

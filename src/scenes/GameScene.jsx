@@ -18,19 +18,20 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout }) {
   const imagesRef = useRef({});
 
   // Load all images
-  useEffect(() => {
-    const avatarConfig = getAvatar(avatar);
-    const collectibleConfig = getCollectible(gameState.levelData.collectibleType);
-    const obstacleConfig = getObstacle(gameState.levelData.obstacleType);
+useEffect(() => {
+  const avatarConfig = getAvatar(avatar);
+  const collectibleConfig = getCollectible(gameState.levelData.collectibleType);
+  const obstacleConfig = getObstacle(gameState.levelData.obstacleType);
 
-    const images = {
-      avatar: new Image(),
-      collectible: new Image(),
-      obstacle: new Image(),
-    };
+  const images = {
+    avatar: new Image(),
+    collectible: new Image(),
+    obstacle: new Image(),
+    background: new Image(), // ADD THIS
+  };
 
-    let loadedCount = 0;
-    const totalImages = 3;
+  let loadedCount = 0;
+  const totalImages = 4; // CHANGE from 3 to 4
 
     const onImageLoad = () => {
       loadedCount++;
@@ -59,6 +60,10 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout }) {
     images.obstacle.onerror = () => onImageError('obstacle');
     images.obstacle.src = obstacleConfig.image;
 
+    images.background.onload = onImageLoad;
+images.background.onerror = () => onImageError('background');
+images.background.src = gameState.levelData.background || '';
+
     imagesRef.current = images;
   }, [avatar, gameState.levelData.collectibleType, gameState.levelData.obstacleType]);
 
@@ -77,11 +82,18 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout }) {
     let animationFrameId;
 
     const draw = () => {
-      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-      
-      // 1. Background
-      ctx.fillStyle = gameState.levelData.backgroundColor || '#2d5016';
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  
+  // 1. Draw Background Image
+  if (imagesRef.current.background && 
+      imagesRef.current.background.complete && 
+      imagesRef.current.background.naturalWidth > 0) {
+    ctx.drawImage(imagesRef.current.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  } else {
+    // Fallback to solid color
+    ctx.fillStyle = gameState.levelData.backgroundColor || '#2d5016';
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+  }
       
       // Ground line
       ctx.strokeStyle = '#000';
