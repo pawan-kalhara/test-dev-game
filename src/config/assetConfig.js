@@ -10,14 +10,14 @@
 export const AVATARS = {
   monkey: {
     id: 'monkey',
-    name: 'Monkey',
+    name: 'Ralph',
     image: '/assets/avatars/monkey.png',
     size: 40, // width and height in pixels
     description: 'Agile and quick'
   },
   elephant: {
     id: 'elephant',
-    name: 'Elephant',
+    name: 'Jumbo',
     image: '/assets/avatars/elephant.png',
     size: 40,
     description: 'Strong and sturdy'
