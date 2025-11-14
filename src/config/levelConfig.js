@@ -1,56 +1,75 @@
 /*
-  This is your main config file for levels.
-  To add a new level, just copy LEVEL_1 and create a LEVEL_2.
-  The game logic will automatically pick it up.
-
-  Coordinates:
-  - (0, 0) is the Top-Left corner of the canvas.
-  - Canvas size is 800 (width) x 450 (height).
-  - 'y' is distance from the top. A bigger 'y' is lower down.
-  - The "ground" is at y = 400.
+  Level Configuration
+  - Canvas size: 800 (width) x 450 (height)
+  - Ground level: y = 400
+  - Coordinate (0,0) is top-left
 */
+
 export const LEVELS = {
   1: {
     name: "Jungle Jam",
-    // This is the background image you'll add to public/assets/environment
-    background: 'assets/environment/jungle-bg.png', 
+    // Using solid color backgrounds as fallback
+    background: null, // We'll draw this with canvas
+    backgroundColor: '#2d5016', // Dark green jungle color
     playerStart: { x: 50, y: 350 },
-    door: { x: 750, y: 340 }, // 'y' is top of the door
+    door: { x: 740, y: 340 },
     
-    // This is the image you'll add for platforms
-    platformImg: 'assets/environment/platform.png',
+    platformImg: null,
+    platformColor: '#8B4513', // Brown platform color
     platforms: [
-      { x: 350, y: 300, width: 100 },
-      { x: 500, y: 250, width: 100 },
+      { x: 200, y: 300, width: 120 },
+      { x: 400, y: 250, width: 120 },
+      { x: 600, y: 200, width: 120 },
     ],
 
-    // This is the image you'll add for bananas
-    collectibleImg: 'https://placehold.co/20x20/FFFF00/000000?text=B', // Placeholder
+    collectibleImg: null,
+    collectibleColor: '#FFD700', // Gold banana color
     collectibles: [
-      { id: 'b1', x: 200, y: 360, points: 10 },
-      { id: 'b2', x: 375, y: 260, points: 10 }, // On platform 1
-      { id: 'b3', x: 525, y: 210, points: 10 }, // On platform 2
+      { id: 'b1', x: 150, y: 360, points: 10 },
+      { id: 'b2', x: 240, y: 270, points: 10 },
+      { id: 'b3', x: 440, y: 220, points: 10 },
+      { id: 'b4', x: 640, y: 170, points: 10 },
     ],
 
-    // This is the image you'll add for bombs
-    obstacleImg: 'assets/environment/bomb.png',
+    obstacleImg: null,
+    obstacleColor: '#DC143C', // Red bomb color
     obstacles: [
-      { id: 'o1', x: 300, y: 360 },
-      { id: 'o2', x: 515, y: 360 },
+      { id: 'o1', x: 300, y: 380 },
+      { id: 'o2', x: 500, y: 380 },
     ],
   },
   
-  // TO ADD A NEW LEVEL:
-  // 2: {
-  //   name: "Cave Crisis",
-  //   background: 'assets/environment/cave-bg.png', 
-  //   playerStart: { x: 50, y: 350 },
-  //   door: { x: 750, y: 340 },
-  //   platformImg: 'assets/environment/rock-platform.png',
-  //   platforms: [ ... new platform coordinates ... ],
-  //   collectibleImg: '.../gem.png',
-  //   collectibles: [ ... new collectible coordinates ... ],
-  //   obstacleImg: 'assets/environment/spike.png',
-  //   obstacles: [ ... new obstacle coordinates ... ],
-  // }
+  2: {
+    name: "Cave Crisis",
+    background: null,
+    backgroundColor: '#1a1a2e',
+    playerStart: { x: 50, y: 350 },
+    door: { x: 740, y: 340 },
+    
+    platformImg: null,
+    platformColor: '#4a4a4a',
+    platforms: [
+      { x: 150, y: 320, width: 100 },
+      { x: 300, y: 280, width: 100 },
+      { x: 450, y: 240, width: 100 },
+      { x: 600, y: 200, width: 100 },
+    ],
+
+    collectibleImg: null,
+    collectibleColor: '#00CED1',
+    collectibles: [
+      { id: 'b1', x: 180, y: 290, points: 15 },
+      { id: 'b2', x: 330, y: 250, points: 15 },
+      { id: 'b3', x: 480, y: 210, points: 15 },
+      { id: 'b4', x: 630, y: 170, points: 15 },
+    ],
+
+    obstacleImg: null,
+    obstacleColor: '#8B0000',
+    obstacles: [
+      { id: 'o1', x: 250, y: 380 },
+      { id: 'o2', x: 400, y: 380 },
+      { id: 'o3', x: 550, y: 380 },
+    ],
+  },
 };
