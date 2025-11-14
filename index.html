@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Monkey Banana Quest</title>
+    <style>
+      /* Make canvas sharp, not blurry */
+      canvas {
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -webkit-crisp-edges;
+        image-rendering: pixelated;
+        image-rendering: crisp-edges;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-900">
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!-- 
+      We removed the <script> tag. 
+      Vite will now inject your src/index.css file here. 
+    -->
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
