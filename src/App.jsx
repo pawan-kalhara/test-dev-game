@@ -5,14 +5,15 @@ import { authService } from './services/authService.js';
 import Loader from './components/Loader.jsx';
 import LoginScene from './scenes/LoginScene.jsx';
 import RegisterScene from './scenes/RegisterScene.jsx';
+import MainMenuScene from './scenes/MainMenuScene.jsx'; // NEW
 import AvatarScene from './scenes/AvatarScene.jsx';
 import DifficultyScene from './scenes/DifficultyScene.jsx';
 import GameScene from './scenes/GameScene.jsx';
 import GameOverScene from './scenes/GameOverScene.jsx';
 
 export default function App() {
-  const [scene, setScene] = useState('loading'); // loading, login, register, avatar, difficulty, game, gameover
-  const [currentUser, setCurrentUser] = useState(null); // { email, avatar, highScore }
+  const [scene, setScene] = useState('loading'); // loading, login, register, mainmenu, avatar, difficulty, game, gameover
+  const [currentUser, setCurrentUser] = useState(null);
   const [difficulty, setDifficulty] = useState('easy');
   const [lastScore, setLastScore] = useState(0);
 
@@ -21,11 +22,8 @@ export default function App() {
     const user = authService.getCurrentUser();
     if (user) {
       setCurrentUser(user);
-      if (!user.avatar) {
-        setScene('avatar');
-      } else {
-        setScene('difficulty');
-      }
+      // Go to main menu after login
+      setScene('mainmenu');
     } else {
       setScene('login');
     }
@@ -35,10 +33,27 @@ export default function App() {
 
   const handleAuthSuccess = (user) => {
     setCurrentUser(user);
-    if (!user.avatar) {
+    // Go to main menu after successful login/registration
+    setScene('mainmenu');
+  };
+
+  const handleStartGame = () => {
+    // Check if user has selected an avatar
+    if (!currentUser.avatar) {
       setScene('avatar');
     } else {
       setScene('difficulty');
+    }
+  };
+
+  const handleOptions = () => {
+    // You can implement an options screen here
+    alert('Options menu coming soon!');
+  };
+
+  const handleExit = () => {
+    if (window.confirm('Are you sure you want to exit?')) {
+      handleLogout();
     }
   };
 
@@ -72,6 +87,10 @@ export default function App() {
     setScene('difficulty');
   };
 
+  const handleBackToMenu = () => {
+    setScene('mainmenu');
+  };
+
   const handleLogout = () => {
     authService.logout();
     setCurrentUser(null);
@@ -95,6 +114,15 @@ export default function App() {
           <RegisterScene
             onRegisterSuccess={handleAuthSuccess}
             onGoToLogin={() => setScene('login')}
+          />
+        );
+      case 'mainmenu':
+        return (
+          <MainMenuScene
+            userName={currentUser?.email?.split('@')[0] || 'Player'}
+            onStartGame={handleStartGame}
+            onOptions={handleOptions}
+            onExit={handleExit}
           />
         );
       case 'avatar':
