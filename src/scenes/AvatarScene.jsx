@@ -15,15 +15,34 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
     }
   };
 
-  return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-900 via-purple-700 to-purple-900 p-8">
+ return (
+  <div 
+    className="min-h-screen flex flex-col items-center justify-center p-8"
+    style={{
+      backgroundImage: 'url(/assets/backgrounds/menu-background.png)',
+      backgroundRepeat: 'no-repeat',
+      backgroundSize: 'cover', // Stretches to fill screen
+      backgroundPosition: 'center',
+      backgroundColor: '#581c87' // Fallback purple color
+    }}
+  >
+    {/* Semi-transparent overlay for better visibility */}
+    <div 
+      className="absolute inset-0 bg-gradient-to-b from-green-900/60 via-green-700/60 to-green-900/60"
+      style={{ zIndex: 0 }}
+    />
+
+    {/* Content - needs to be above the overlay */}
+    <div className="relative z-10 flex flex-col items-center w-full">
       <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">
         Choose Your Character
       </h1>
       
       {currentAvatar && (
         <p className="text-green-300 mb-6 text-lg">
-          Currently using: <span className="text-yellow-300 font-bold">{getAvatarList().find(a => a.id === currentAvatar)?.name}</span>
+          Currently using: <span className="text-yellow-300 font-bold">
+            {getAvatarList().find(a => a.id === currentAvatar)?.name}
+          </span>
         </p>
       )}
 
@@ -40,7 +59,6 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
               }
             `}
           >
-            {/* Current Avatar Badge */}
             {currentAvatar === avatar.id && (
               <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
                 CURRENT
@@ -79,7 +97,6 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
           {currentAvatar && selectedAvatar !== currentAvatar ? 'Change Avatar' : 'Confirm Selection'}
         </button>
 
-        {/* Cancel Button - only show if user already has an avatar */}
         {currentAvatar && onCancel && (
           <button
             onClick={onCancel}
@@ -97,5 +114,6 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
         Logout
       </button>
     </div>
-  );
+  </div>
+);
 }

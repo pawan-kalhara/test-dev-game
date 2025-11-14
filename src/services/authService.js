@@ -1,7 +1,7 @@
 /*
   Simulated User Service (Virtual Identity)
   Uses localStorage to simulate a database.
-  WARNING: This is NOT secure and for prototype purposes only.
+  This is for prototype purposes only.
 */
 const DB_USERS = 'monkey_game_users';
 const DB_DATA = 'monkey_game_data';
@@ -28,7 +28,7 @@ export const authService = {
         return reject(new Error("User already exists. Please login."));
       }
       
-      // WARNING: Storing plaintext passwords. In a real app, you would hash this.
+    
       users[email] = password;
       commitUsers(users);
       

@@ -2,7 +2,16 @@ import React from 'react';
 
 export default function DifficultyScene({ onDifficultySelect, highScore, onLogout }) {
   return (
-    <div className="bg-gray-800 p-8 rounded-lg shadow-xl text-center">
+    <div 
+  className="relative min-h-screen flex flex-col items-center justify-center p-8"
+  style={{
+    backgroundImage: 'url(/assets/backgrounds/menu-background.png)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover', // Scales to cover entire screen
+    backgroundPosition: 'center',
+    backgroundColor: '#064e3b'
+  }}
+  >
       <h1 className="text-3xl font-bold text-yellow-400 mb-2">Select Difficulty</h1>
       <p className="text-gray-300 mb-6">Your High Score: {highScore}</p>
       <div className="space-y-4 max-w-xs mx-auto">

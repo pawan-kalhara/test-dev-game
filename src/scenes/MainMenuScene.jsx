@@ -38,12 +38,29 @@ export default function MainMenuScene({
     </button>
   );
 
-  return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-900 via-green-700 to-green-900 p-8">
+return (
+<div 
+  className="relative min-h-screen flex flex-col items-center justify-center p-8"
+  style={{
+    backgroundImage: 'url(/assets/backgrounds/menu-background.png)',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover', // Scales to cover entire screen
+    backgroundPosition: 'center',
+    backgroundColor: '#064e3b'
+  }}
+  >
+    {/* Optional: Add a semi-transparent overlay for better text readability */}
+    <div 
+      className="absolute inset-0 bg-gradient-to-b from-green-900/50 via-green-700/50 to-green-900/50"
+      style={{ zIndex: 0 }}
+    />
+
+    {/* Content - needs to be above the overlay */}
+    <div className="relative z-10 w-full flex flex-col items-center">
       {/* Game Title */}
       <div className="text-center mb-8 animate-fade-in">
         <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg pixel-text">
-          MONKEY CODEBREAKER
+          MONKEY QUEST
         </h1>
         <p className="text-2xl text-green-200">
           Welcome, <span className="text-yellow-300 font-semibold">{userName}</span>!
@@ -73,7 +90,7 @@ export default function MainMenuScene({
       <div className="flex flex-col items-center space-y-6 w-full max-w-md">
         <ButtonStyled
           id="start"
-          label="START"
+          label="START GAME"
           icon="▶"
           onClick={onStartGame}
           hovered={hoveredButton}
@@ -105,9 +122,10 @@ export default function MainMenuScene({
       </div>
 
       {/* Footer Info */}
-      <div className="absolute bottom-8 text-center text-green-300 text-sm">
-        <p>Press START to begin your adventure!</p>
+      <div className="mt-8 text-center text-green-300 text-sm">
+        <p>Press START GAME to begin your adventure!</p>
       </div>
     </div>
-  );
+  </div>
+);
 }
