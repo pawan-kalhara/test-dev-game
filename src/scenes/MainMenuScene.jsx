@@ -1,36 +1,47 @@
 import React, { useState } from 'react';
+import { getAvatar } from '../config/assetConfig.js';
 
-export default function MainMenuScene({ userName, onStartGame, onOptions, onExit }) {
+export default function MainMenuScene({ 
+  userName, 
+  currentAvatar, 
+  onStartGame, 
+  onChangeAvatar,
+  onOptions, 
+  onExit 
+}) {
   const [hoveredButton, setHoveredButton] = useState(null);
+  const avatarConfig = currentAvatar ? getAvatar(currentAvatar) : null;
 
-  const buttons = [
-    {
-      id: 'start',
-      image: '/images/buttons/start-button.png',
-      alt: 'Start Game',
-      onClick: onStartGame,
-      scale: hoveredButton === 'start' ? 1.1 : 1
-    },
-   /* {
-      id: 'options',
-      image: '/images/buttons/options-button.png',
-      alt: 'Options',
-      onClick: onOptions,
-      scale: hoveredButton === 'options' ? 1.1 : 1
-    },*/
-    {
-      id: 'exit',
-      image: '/images/buttons/exit-button.png',
-      alt: 'Exit',
-      onClick: onExit,
-      scale: hoveredButton === 'exit' ? 1.1 : 1
-    }
-  ];
+  const ButtonStyled = ({ id, label, onClick, hovered, icon }) => (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHoveredButton(id)}
+      onMouseLeave={() => setHoveredButton(null)}
+      className={`
+        w-full px-8 py-6 text-3xl font-bold uppercase tracking-wider
+        bg-gradient-to-b from-green-500 to-green-700
+        border-4 border-white
+        rounded-xl shadow-2xl
+        transition-all duration-200
+        ${hovered === id ? 'scale-110 brightness-125' : 'scale-100'}
+        hover:shadow-yellow-400/50
+        active:translate-y-1
+        focus:outline-none focus:ring-4 focus:ring-yellow-400
+      `}
+      style={{
+        textShadow: '3px 3px 0px rgba(0,0,0,0.8)',
+        fontFamily: 'monospace'
+      }}
+    >
+      {icon && <span className="mr-3">{icon}</span>}
+      {label}
+    </button>
+  );
 
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-green-900 via-green-700 to-green-900 p-8">
       {/* Game Title */}
-      <div className="text-center mb-12 animate-fade-in">
+      <div className="text-center mb-8 animate-fade-in">
         <h1 className="text-6xl font-bold text-white mb-4 drop-shadow-lg pixel-text">
           MONKEY CODEBREAKER
         </h1>
@@ -39,30 +50,58 @@ export default function MainMenuScene({ userName, onStartGame, onOptions, onExit
         </p>
       </div>
 
-      {/* Menu Buttons */}
-      <div className="flex flex-col items-center space-y-6 w-full max-w-md">
-        {buttons.map((button) => (
-          <button
-            key={button.id}
-            onClick={button.onClick}
-            onMouseEnter={() => setHoveredButton(button.id)}
-            onMouseLeave={() => setHoveredButton(null)}
-            className="w-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-yellow-400 rounded-lg"
-            style={{
-              transform: `scale(${button.scale})`,
-              filter: hoveredButton === button.id ? 'brightness(1.2)' : 'brightness(1)'
-            }}
-          >
+      {/* Current Avatar Display */}
+      {avatarConfig && (
+        <div className="mb-6 flex flex-col items-center bg-white/10 p-4 rounded-lg backdrop-blur-sm">
+          <p className="text-sm text-green-200 mb-2">Current Avatar:</p>
+          <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center overflow-hidden mb-2">
             <img
-              src={button.image}
-              alt={button.alt}
-              className="w-full h-auto drop-shadow-2xl"
-              style={{
-                imageRendering: 'pixelated'
+              src={avatarConfig.image}
+              alt={avatarConfig.name}
+              className="w-16 h-16 object-contain"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.parentElement.innerHTML = `<span class="text-3xl text-white">${avatarConfig.name[0]}</span>`;
               }}
             />
-          </button>
-        ))}
+          </div>
+          <p className="text-white font-bold">{avatarConfig.name}</p>
+        </div>
+      )}
+
+      {/* Menu Buttons */}
+      <div className="flex flex-col items-center space-y-6 w-full max-w-md">
+        <ButtonStyled
+          id="start"
+          label="START"
+          icon="▶"
+          onClick={onStartGame}
+          hovered={hoveredButton}
+        />
+        
+        <ButtonStyled
+          id="avatar"
+          label="CHANGE AVATAR"
+          icon="👤"
+          onClick={onChangeAvatar}
+          hovered={hoveredButton}
+        />
+        
+        <ButtonStyled
+          id="options"
+          label="OPTIONS"
+          icon="⚙"
+          onClick={onOptions}
+          hovered={hoveredButton}
+        />
+        
+        <ButtonStyled
+          id="exit"
+          label="EXIT"
+          icon="✕"
+          onClick={onExit}
+          hovered={hoveredButton}
+        />
       </div>
 
       {/* Footer Info */}

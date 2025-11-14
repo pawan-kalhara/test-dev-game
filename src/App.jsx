@@ -5,14 +5,14 @@ import { authService } from './services/authService.js';
 import Loader from './components/Loader.jsx';
 import LoginScene from './scenes/LoginScene.jsx';
 import RegisterScene from './scenes/RegisterScene.jsx';
-import MainMenuScene from './scenes/MainMenuScene.jsx'; // NEW
+import MainMenuScene from './scenes/MainMenuScene.jsx';
 import AvatarScene from './scenes/AvatarScene.jsx';
 import DifficultyScene from './scenes/DifficultyScene.jsx';
 import GameScene from './scenes/GameScene.jsx';
 import GameOverScene from './scenes/GameOverScene.jsx';
 
 export default function App() {
-  const [scene, setScene] = useState('loading'); // loading, login, register, mainmenu, avatar, difficulty, game, gameover
+  const [scene, setScene] = useState('loading');
   const [currentUser, setCurrentUser] = useState(null);
   const [difficulty, setDifficulty] = useState('easy');
   const [lastScore, setLastScore] = useState(0);
@@ -22,7 +22,6 @@ export default function App() {
     const user = authService.getCurrentUser();
     if (user) {
       setCurrentUser(user);
-      // Go to main menu after login
       setScene('mainmenu');
     } else {
       setScene('login');
@@ -33,7 +32,6 @@ export default function App() {
 
   const handleAuthSuccess = (user) => {
     setCurrentUser(user);
-    // Go to main menu after successful login/registration
     setScene('mainmenu');
   };
 
@@ -46,8 +44,12 @@ export default function App() {
     }
   };
 
+  const handleChangeAvatar = () => {
+    // Navigate to avatar selection
+    setScene('avatar');
+  };
+
   const handleOptions = () => {
-    // You can implement an options screen here
     alert('Options menu coming soon!');
   };
 
@@ -59,11 +61,19 @@ export default function App() {
 
   const handleAvatarSelect = (avatar) => {
     const newUserData = { ...currentUser, avatar };
-    authService.saveUserData(currentUser.email, { avatar: avatar, highScore: currentUser.highScore })
-      .then(() => {
-        setCurrentUser(newUserData);
-        setScene('difficulty');
-      });
+    authService.saveUserData(currentUser.email, { 
+      avatar: avatar, 
+      highScore: currentUser.highScore 
+    }).then(() => {
+      setCurrentUser(newUserData);
+      // Return to main menu after avatar change
+      setScene('mainmenu');
+    });
+  };
+
+  const handleAvatarCancel = () => {
+    // Return to main menu without changing avatar
+    setScene('mainmenu');
   };
 
   const handleDifficultySelect = (diff) => {
@@ -75,10 +85,12 @@ export default function App() {
     setLastScore(score);
     if (score > currentUser.highScore) {
       const newUserData = { ...currentUser, highScore: score };
-      authService.saveUserData(currentUser.email, { avatar: newUserData.avatar, highScore: score })
-        .then(() => {
-          setCurrentUser(newUserData);
-        });
+      authService.saveUserData(currentUser.email, { 
+        avatar: newUserData.avatar, 
+        highScore: score 
+      }).then(() => {
+        setCurrentUser(newUserData);
+      });
     }
     setScene('gameover');
   };
@@ -120,7 +132,9 @@ export default function App() {
         return (
           <MainMenuScene
             userName={currentUser?.email?.split('@')[0] || 'Player'}
+            currentAvatar={currentUser?.avatar}
             onStartGame={handleStartGame}
+            onChangeAvatar={handleChangeAvatar}
             onOptions={handleOptions}
             onExit={handleExit}
           />
@@ -128,7 +142,9 @@ export default function App() {
       case 'avatar':
         return (
           <AvatarScene
+            currentAvatar={currentUser?.avatar}
             onAvatarSelect={handleAvatarSelect}
+            onCancel={handleAvatarCancel}
             onLogout={handleLogout}
           />
         );
@@ -155,6 +171,7 @@ export default function App() {
             score={lastScore}
             highScore={currentUser?.highScore || 0}
             onPlayAgain={handlePlayAgain}
+            onBackToMenu={handleBackToMenu}
             onLogout={handleLogout}
           />
         );
