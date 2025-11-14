@@ -96,19 +96,30 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
     });
   }, [difficulty, puzzle.isActive]);
 
-  const handlePuzzleSubmit = (isCorrect, answer) => {
-    clearInterval(puzzle.timerId);
-    
-    if (isCorrect && parseInt(answer) === puzzle.data.solution) {
-      setScore(s => s + 50); // Add points
-      loadLevel(currentLevel + 1); // Load next level!
-    } else {
-      // Failed puzzle, just resume
-      setGameActive(true);
-    }
-    
+const handlePuzzleSubmit = (isCorrect, answer) => {
+  clearInterval(puzzle.timerId);
+  
+  if (isCorrect && parseInt(answer) === puzzle.data.solution) {
+    setScore(s => s + 50); // Add points for correct answer
+    loadLevel(currentLevel + 1); // Load next level!
     setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
-  };
+  } else {
+    // Failed puzzle - lose a life
+    const newLives = lives - 1;
+    setLives(newLives);
+    
+    if (newLives <= 0) {
+      setGameActive(false);
+      onGameEnd(score);
+      setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
+    } else {
+      // Still have lives remaining, resume game
+      setGameActive(true);
+      setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
+    }
+  }
+};
+  
 
   // --- Collision Detection ---
   const checkCollision = (rect1, rect2) => {
