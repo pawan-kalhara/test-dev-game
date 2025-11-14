@@ -1,37 +1,77 @@
 import React, { useState } from 'react';
-
-// You can add more avatars here. Just make sure the files exist
-// in /public/assets/avatars/
-const AVATARS = [
-  { id: 'avatar01', src: 'assets/avatars/avatar01.png' },
-  { id: 'avatar02', src: 'assets/avatars/avatar02.png' },
-];
+import { getAvatarList } from '../config/assetConfig.js';
 
 export default function AvatarScene({ onAvatarSelect, onLogout }) {
-  const [selected, setSelected] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const avatars = getAvatarList();
+
+  const handleSelect = (avatarId) => {
+    setSelectedAvatar(avatarId);
+  };
+
+  const handleConfirm = () => {
+    if (selectedAvatar) {
+      onAvatarSelect(selectedAvatar);
+    }
+  };
 
   return (
-    <div className="bg-gray-800 p-8 rounded-lg shadow-xl text-center">
-      <h1 className="text-3xl font-bold text-yellow-400 mb-6">Choose your Avatar</h1>
-      <div className="flex justify-center gap-6 mb-6">
-        {AVATARS.map((avatar) => (
-          <img
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-purple-900 via-purple-700 to-purple-900 p-8">
+      <h1 className="text-5xl font-bold text-white mb-8 drop-shadow-lg">
+        Choose Your Character
+      </h1>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+        {avatars.map((avatar) => (
+          <button
             key={avatar.id}
-            src={avatar.src}
-            alt={avatar.id}
-            onClick={() => setSelected(avatar.id)}
-            className={`w-32 h-32 rounded-full cursor-pointer transition-all ${selected === avatar.id ? 'ring-4 ring-yellow-500 scale-110' : 'opacity-70 hover:opacity-100'}`}
-          />
+            onClick={() => handleSelect(avatar.id)}
+            className={`
+              flex flex-col items-center p-6 rounded-xl transition-all duration-200
+              ${selectedAvatar === avatar.id 
+                ? 'bg-yellow-400 scale-110 shadow-2xl ring-4 ring-white' 
+                : 'bg-white/10 hover:bg-white/20 hover:scale-105'
+              }
+            `}
+          >
+            <div className="w-24 h-24 mb-3 bg-white/20 rounded-lg flex items-center justify-center overflow-hidden">
+              <img
+                src={avatar.image}
+                alt={avatar.name}
+                className="w-20 h-20 object-contain"
+                onError={(e) => {
+                  // Fallback if image doesn't load
+                  e.target.style.display = 'none';
+                  e.target.parentElement.innerHTML = `<span class="text-4xl">${avatar.name[0]}</span>`;
+                }}
+              />
+            </div>
+            <p className="text-xl font-bold text-white mb-1">{avatar.name}</p>
+            <p className="text-sm text-gray-300 text-center">{avatar.description}</p>
+          </button>
         ))}
       </div>
-      <button 
-        onClick={() => onAvatarSelect(selected)} 
-        disabled={!selected}
-        className="w-full max-w-xs mx-auto p-3 rounded bg-yellow-500 text-gray-900 font-bold hover:bg-yellow-400 transition-colors disabled:opacity-50"
+
+      <button
+        onClick={handleConfirm}
+        disabled={!selectedAvatar}
+        className={`
+          px-8 py-4 rounded-lg text-xl font-bold transition-all
+          ${selectedAvatar
+            ? 'bg-green-500 hover:bg-green-600 text-white cursor-pointer'
+            : 'bg-gray-500 text-gray-300 cursor-not-allowed'
+          }
+        `}
       >
-        Confirm
+        Confirm Selection
       </button>
-      <button onClick={onLogout} className="text-gray-400 hover:text-white mt-4 text-sm">Logout</button>
+
+      <button
+        onClick={onLogout}
+        className="mt-6 px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg"
+      >
+        Logout
+      </button>
     </div>
   );
 }
