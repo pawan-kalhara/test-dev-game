@@ -7,7 +7,7 @@ export default function DifficultyScene({ onDifficultySelect, highScore, onLogou
   style={{
     backgroundImage: 'url(/assets/backgrounds/menu-background.png)',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover', // Scales to cover entire screen
+    backgroundSize: 'cover', 
     backgroundPosition: 'center',
     backgroundColor: '#064e3b'
   }}

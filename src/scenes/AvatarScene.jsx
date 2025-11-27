@@ -21,9 +21,9 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
     style={{
       backgroundImage: 'url(/assets/backgrounds/menu-background.png)',
       backgroundRepeat: 'no-repeat',
-      backgroundSize: 'cover', // Stretches to fill screen
+      backgroundSize: 'cover', 
       backgroundPosition: 'center',
-      backgroundColor: '#581c87' // Fallback purple color
+      backgroundColor: '#581c87' 
     }}
   >
     {/* Semi-transparent overlay for better visibility */}
