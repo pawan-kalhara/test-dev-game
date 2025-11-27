@@ -72,9 +72,9 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
     setGameActive(true);
   };
 
-  // --- Puzzle API Logic (Interoperability) ---
+  // --- Puzzle API Logic ---
   const triggerPuzzle = useCallback(() => {
-    if (puzzle.isActive) return; // Don't re-trigger
+    if (puzzle.isActive) return; 
     
     setGameActive(false); // Pause game
     
@@ -131,7 +131,7 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
     );
   };
 
-  // --- Game Loop (Event-Driven Tick) ---
+  // --- Game Loop ---
   const gameTick = useCallback(() => {
     if (!gameActive) return;
 
@@ -168,7 +168,7 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
       // Platform collision
       levelData.platforms.forEach(platform => {
         const platRect = { ...platform, height: PLATFORM_HEIGHT };
-        // Check if player is *above* platform and *falling*
+        
         if (prevPlayer.y + prevPlayer.height <= platform.y && 
             checkCollision({ ...prevPlayer, x, y }, platRect)) 
         {
@@ -188,9 +188,9 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
       const itemRect = { ...item, width: ITEM_SIZE, height: ITEM_SIZE };
       if (checkCollision(player, itemRect)) {
         setScore(s => s + item.points);
-        return false; // Remove item
+        return false; 
       }
-      return true; // Keep item
+      return true; 
     }));
     
     // Obstacles
@@ -202,7 +202,7 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
           setGameActive(false);
           onGameEnd(score);
         }
-        return false; // Remove item
+        return false; 
       }
       return true; // Keep item
     }));

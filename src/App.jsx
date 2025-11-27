@@ -45,7 +45,7 @@ export default function App() {
   };
 
   const handleChangeAvatar = () => {
-    // Navigate to avatar selection
+    
     setScene('avatar');
   };
 
@@ -66,13 +66,13 @@ export default function App() {
       highScore: currentUser.highScore 
     }).then(() => {
       setCurrentUser(newUserData);
-      // Return to main menu after avatar change
+      
       setScene('mainmenu');
     });
   };
 
   const handleAvatarCancel = () => {
-    // Return to main menu without changing avatar
+    
     setScene('mainmenu');
   };
 

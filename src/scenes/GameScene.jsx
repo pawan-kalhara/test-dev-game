@@ -27,11 +27,11 @@ useEffect(() => {
     avatar: new Image(),
     collectible: new Image(),
     obstacle: new Image(),
-    background: new Image(), // ADD THIS
+    background: new Image(), 
   };
 
   let loadedCount = 0;
-  const totalImages = 4; // CHANGE from 3 to 4
+  const totalImages = 4;
 
     const onImageLoad = () => {
       loadedCount++;

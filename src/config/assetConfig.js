@@ -12,7 +12,7 @@ export const AVATARS = {
     id: 'monkey',
     name: 'Ralph',
     image: '/assets/avatars/monkey.png',
-    size: 40, // width and height in pixels
+    size: 40, 
     description: 'Agile and quick'
   },
   elephant: {

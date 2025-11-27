@@ -1,6 +1,6 @@
 /**
  * Fetches a new puzzle from the Banana API.
- * @returns {Promise<Object>} A promise that resolves to { question: "image_url", solution: 123 }
+ * @returns {Promise<Object>}
  */
 export const fetchBananaPuzzle = () => {
   return fetch('https://marcconrad.com/uob/banana/api.php')
