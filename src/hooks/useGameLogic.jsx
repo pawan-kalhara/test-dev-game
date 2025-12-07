@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchBananaPuzzle } from '../services/bananaApi.js';
 import { LEVELS } from '../config/levelConfig.js';
-import soundManager from '../services/soundManager.js';
+
 
 // Game constants
 const CANVAS_WIDTH = 800;
@@ -13,12 +13,14 @@ const GRAVITY = 0.5;
 const JUMP_POWER = -12;
 const PLAYER_SPEED = 5;
 
+
 // Asset dimensions (match your images)
 const ITEM_SIZE = 20;
 const BOMB_SIZE = 20;
 const PLATFORM_HEIGHT = 20;
 const DOOR_WIDTH = 40;
 const DOOR_HEIGHT = 60;
+
 
 export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -39,6 +41,7 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [lives, setLives] = useState(3);
   const [gameActive, setGameActive] = useState(true);
 
+
   const [puzzle, setPuzzle] = useState({
     isActive: false,
     data: null,
@@ -46,30 +49,19 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
     timerId: null,
   });
 
-  const inputKeysRef = useRef(new Set());
-  const soundInitializedRef = useRef(false);
 
-  // Initialize sounds on component mount
-  useEffect(() => {
-    if (!soundInitializedRef.current) {
-      soundManager.initializeSounds();
-      soundInitializedRef.current = true;
-    }
-  }, []);
+  const inputKeysRef = useRef(new Set());
+
 
   // --- Level Loading ---
   const loadLevel = (levelNumber) => {
     const nextLevelData = LEVELS[levelNumber];
     if (!nextLevelData) {
       // No more levels, game is over!
-      soundManager.playSound('gameOver');
       setGameActive(false);
       onGameEnd(score);
       return;
     }
-    
-    // Play level complete sound
-    soundManager.playSound('levelComplete');
     
     setCurrentLevel(levelNumber);
     setLevelData(nextLevelData);
@@ -85,6 +77,7 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
     setObstacles(nextLevelData.obstacles);
     setGameActive(true);
   };
+
 
   // --- Puzzle API Logic ---
   const triggerPuzzle = useCallback(() => {
@@ -115,17 +108,14 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
   
   if (isCorrect && parseInt(answer) === puzzle.data.solution) {
     setScore(s => s + 50); // Add points for correct answer
-    soundManager.playSound('levelComplete'); // Play success sound
     loadLevel(currentLevel + 1); // Load next level!
     setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
   } else {
     // Failed puzzle - lose a life
-    soundManager.playSound('bomb'); // Play wrong answer/hit sound
     const newLives = lives - 1;
     setLives(newLives);
     
     if (newLives <= 0) {
-      soundManager.playSound('gameOver'); // Play game over sound
       setGameActive(false);
       onGameEnd(score);
       setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
@@ -153,8 +143,10 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
 const gameTick = useCallback(() => {
   if (!gameActive) return;
 
+
   setPlayer(prevPlayer => {
     let { x, y, dx, dy, onGround } = { ...prevPlayer };
+
 
     // --- 1. Input System ---
     const keys = inputKeysRef.current;
@@ -164,8 +156,6 @@ const gameTick = useCallback(() => {
     if (keys.has('Space') && onGround) {
       dy = JUMP_POWER;
       onGround = false;
-      // Optional: play jump sound
-      // soundManager.playSound('jump');
     }
     
     // --- 2. Physics System ---
@@ -197,13 +187,13 @@ const gameTick = useCallback(() => {
     return { ...prevPlayer, x, y, dx, dy, onGround };
   });
 
+
   // --- 3. Collision System ---
   
   // Collectibles
   setCollectibles(prevItems => prevItems.filter(item => {
     const itemRect = { ...item, width: ITEM_SIZE, height: ITEM_SIZE };
     if (checkCollision(player, itemRect)) {
-      soundManager.playSound('coin'); // Play coin collection sound
       setScore(s => s + item.points);
       return false;
     }
@@ -226,10 +216,8 @@ const gameTick = useCallback(() => {
       // Check collision with player
       const itemRect = { ...obstacle, y: obstacleY, width: BOMB_SIZE, height: BOMB_SIZE };
       if (checkCollision(player, itemRect)) {
-        soundManager.playSound('bomb'); // Play bomb/hit sound
         setLives(l => l - 1);
         if (lives - 1 <= 0) {
-          soundManager.playSound('gameOver'); // Play game over sound
           setGameActive(false);
           onGameEnd(score);
         }
@@ -241,13 +229,16 @@ const gameTick = useCallback(() => {
     }).filter(o => o !== null); // Remove null obstacles
   });
 
+
   // Door
   const doorRect = { ...levelData.door, width: DOOR_WIDTH, height: DOOR_HEIGHT };
   if (checkCollision(player, doorRect)) {
     triggerPuzzle();
   }
 
+
 }, [gameActive, player, lives, levelData, onGameEnd, score, triggerPuzzle]);
+
 
 
   // --- Input Event Listeners (Event-Driven) ---
@@ -267,6 +258,7 @@ const gameTick = useCallback(() => {
     
     // Start game loop timer
     const gameLoop = setInterval(gameTick, 1000 / 60); // 60 FPS
+
 
     return () => {
       // Cleanup
