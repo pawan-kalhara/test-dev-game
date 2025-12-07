@@ -40,8 +40,8 @@ export const LEVELS = {
 
     obstacleType: 'bomb',
     obstacles: [
-      { id: 'o1', x: 300, y: 380, floating: false },  // ADD floating: false
-      { id: 'o2', x: 550, y: 200, floating: true },  // ADD floating: false
+      { id: 'o1', x: 300, y: 380, floating: false },  
+      { id: 'o2', x: 550, y: 200, floating: true },  
     ],
   },
   
