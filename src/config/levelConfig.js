@@ -37,6 +37,12 @@ export const LEVELS = {
       { id: 'o1', x: 300, y: 380 },
       { id: 'o2', x: 500, y: 380 },
     ],
+
+    obstacleType: 'bomb',
+    obstacles: [
+      { id: 'o1', x: 300, y: 380, floating: false },  // ADD floating: false
+      { id: 'o2', x: 550, y: 200, floating: true },  // ADD floating: false
+    ],
   },
   
   2: {
@@ -70,6 +76,13 @@ export const LEVELS = {
       { id: 'o1', x: 250, y: 380 },
       { id: 'o2', x: 400, y: 380 },
       { id: 'o3', x: 550, y: 380 },
+    ],
+
+    obstacleType: 'bomb',
+    obstacles: [
+      { id: 'o1', x: 250, y: 300, floating: true },   // ADD floating: true
+      { id: 'o2', x: 400, y: 250, floating: true },   // ADD floating: true
+      { id: 'o3', x: 550, y: 200, floating: true },   // ADD floating: true
     ],
   },
 };

@@ -131,89 +131,102 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
     );
   };
 
-  // --- Game Loop ---
-  const gameTick = useCallback(() => {
-    if (!gameActive) return;
 
-    setPlayer(prevPlayer => {
-      let { x, y, dx, dy, onGround } = { ...prevPlayer };
+// --- Game Loop (Event-Driven Tick) ---
+const gameTick = useCallback(() => {
+  if (!gameActive) return;
 
-      // --- 1. Input System ---
-      const keys = inputKeysRef.current;
-      dx = 0; // Reset horizontal speed
-      if (keys.has('ArrowRight')) dx = PLAYER_SPEED;
-      if (keys.has('ArrowLeft')) dx = -PLAYER_SPEED;
-      if (keys.has('Space') && onGround) {
-        dy = JUMP_POWER;
-        onGround = false;
-      }
-      
-      // --- 2. Physics System ---
-      dy += GRAVITY; // Apply gravity
-      x += dx;
-      y += dy;
-      
-      // Screen bounds
-      if (x < 0) x = 0;
-      if (x + PLAYER_WIDTH > CANVAS_WIDTH) x = CANVAS_WIDTH - PLAYER_WIDTH;
-      
-      // Ground collision
-      onGround = false; // Assume not on ground unless we find one
-      if (y + PLAYER_HEIGHT > GROUND_Y) {
-        y = GROUND_Y - PLAYER_HEIGHT;
+  setPlayer(prevPlayer => {
+    let { x, y, dx, dy, onGround } = { ...prevPlayer };
+
+    // --- 1. Input System ---
+    const keys = inputKeysRef.current;
+    dx = 0;
+    if (keys.has('ArrowRight')) dx = PLAYER_SPEED;
+    if (keys.has('ArrowLeft')) dx = -PLAYER_SPEED;
+    if (keys.has('Space') && onGround) {
+      dy = JUMP_POWER;
+      onGround = false;
+    }
+    
+    // --- 2. Physics System ---
+    dy += GRAVITY;
+    x += dx;
+    y += dy;
+    
+    if (x < 0) x = 0;
+    if (x + PLAYER_WIDTH > CANVAS_WIDTH) x = CANVAS_WIDTH - PLAYER_WIDTH;
+    
+    onGround = false;
+    if (y + PLAYER_HEIGHT > GROUND_Y) {
+      y = GROUND_Y - PLAYER_HEIGHT;
+      dy = 0;
+      onGround = true;
+    }
+    
+    levelData.platforms.forEach(platform => {
+      const platRect = { ...platform, height: PLATFORM_HEIGHT };
+      if (prevPlayer.y + prevPlayer.height <= platform.y && 
+          checkCollision({ ...prevPlayer, x, y }, platRect)) 
+      {
+        y = platform.y - PLAYER_HEIGHT;
         dy = 0;
         onGround = true;
       }
-      
-      // Platform collision
-      levelData.platforms.forEach(platform => {
-        const platRect = { ...platform, height: PLATFORM_HEIGHT };
-        
-        if (prevPlayer.y + prevPlayer.height <= platform.y && 
-            checkCollision({ ...prevPlayer, x, y }, platRect)) 
-        {
-          y = platform.y - PLAYER_HEIGHT;
-          dy = 0;
-          onGround = true;
-        }
-      });
-      
-      return { ...prevPlayer, x, y, dx, dy, onGround };
     });
+    
+    return { ...prevPlayer, x, y, dx, dy, onGround };
+  });
 
-    // --- 3. Collision System ---
+  // --- 3. Collision System ---
+  
+  // Collectibles
+  setCollectibles(prevItems => prevItems.filter(item => {
+    const itemRect = { ...item, width: ITEM_SIZE, height: ITEM_SIZE };
+    if (checkCollision(player, itemRect)) {
+      setScore(s => s + item.points);
+      return false;
+    }
+    return true;
+  }));
+  
+  // Obstacles (with floating animation)
+  setObstacles(prevObstacles => {
+    const time = Date.now() / 1000;
     
-    // Collectibles
-    setCollectibles(prevItems => prevItems.filter(item => {
-      const itemRect = { ...item, width: ITEM_SIZE, height: ITEM_SIZE };
-      if (checkCollision(player, itemRect)) {
-        setScore(s => s + item.points);
-        return false; 
+    return prevObstacles.map(obstacle => {
+      // Calculate floating position if this obstacle should float
+      let obstacleY = obstacle.y;
+      
+      if (obstacle.floating) {
+        const floatingOffset = Math.sin(time * 2) * 30; // 30px amplitude
+        obstacleY = levelData.obstacles.find(o => o.id === obstacle.id).y + floatingOffset;
       }
-      return true; 
-    }));
-    
-    // Obstacles
-    setObstacles(prevItems => prevItems.filter(item => {
-      const itemRect = { ...item, width: BOMB_SIZE, height: BOMB_SIZE };
+      
+      // Check collision with player
+      const itemRect = { ...obstacle, y: obstacleY, width: BOMB_SIZE, height: BOMB_SIZE };
       if (checkCollision(player, itemRect)) {
         setLives(l => l - 1);
         if (lives - 1 <= 0) {
           setGameActive(false);
           onGameEnd(score);
         }
-        return false; 
+        return null; // Remove obstacle
       }
-      return true; // Keep item
-    }));
+      
+      // Return obstacle with potentially updated Y position
+      return { ...obstacle, y: obstacleY };
+    }).filter(o => o !== null); // Remove null obstacles
+  });
 
-    // Door
-    const doorRect = { ...levelData.door, width: DOOR_WIDTH, height: DOOR_HEIGHT };
-    if (checkCollision(player, doorRect)) {
-      triggerPuzzle();
-    }
+  // Door
+  const doorRect = { ...levelData.door, width: DOOR_WIDTH, height: DOOR_HEIGHT };
+  if (checkCollision(player, doorRect)) {
+    triggerPuzzle();
+  }
 
-  }, [gameActive, player, lives, levelData, onGameEnd, score, triggerPuzzle]);
+}, [gameActive, player, lives, levelData, onGameEnd, score, triggerPuzzle]);
+
 
   // --- Input Event Listeners (Event-Driven) ---
   useEffect(() => {
