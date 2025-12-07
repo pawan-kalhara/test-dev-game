@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchBananaPuzzle } from '../services/bananaApi.js';
 import { LEVELS } from '../config/levelConfig.js';
+import soundManager from '../services/soundManager.js';
 
 // Game constants
 const CANVAS_WIDTH = 800;
@@ -46,16 +47,29 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
   });
 
   const inputKeysRef = useRef(new Set());
+  const soundInitializedRef = useRef(false);
+
+  // Initialize sounds on component mount
+  useEffect(() => {
+    if (!soundInitializedRef.current) {
+      soundManager.initializeSounds();
+      soundInitializedRef.current = true;
+    }
+  }, []);
 
   // --- Level Loading ---
   const loadLevel = (levelNumber) => {
     const nextLevelData = LEVELS[levelNumber];
     if (!nextLevelData) {
       // No more levels, game is over!
+      soundManager.playSound('gameOver');
       setGameActive(false);
       onGameEnd(score);
       return;
     }
+    
+    // Play level complete sound
+    soundManager.playSound('levelComplete');
     
     setCurrentLevel(levelNumber);
     setLevelData(nextLevelData);
@@ -101,14 +115,17 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
   
   if (isCorrect && parseInt(answer) === puzzle.data.solution) {
     setScore(s => s + 50); // Add points for correct answer
+    soundManager.playSound('levelComplete'); // Play success sound
     loadLevel(currentLevel + 1); // Load next level!
     setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
   } else {
     // Failed puzzle - lose a life
+    soundManager.playSound('bomb'); // Play wrong answer/hit sound
     const newLives = lives - 1;
     setLives(newLives);
     
     if (newLives <= 0) {
+      soundManager.playSound('gameOver'); // Play game over sound
       setGameActive(false);
       onGameEnd(score);
       setPuzzle({ isActive: false, data: null, timer: 0, timerId: null });
@@ -147,6 +164,8 @@ const gameTick = useCallback(() => {
     if (keys.has('Space') && onGround) {
       dy = JUMP_POWER;
       onGround = false;
+      // Optional: play jump sound
+      // soundManager.playSound('jump');
     }
     
     // --- 2. Physics System ---
@@ -184,6 +203,7 @@ const gameTick = useCallback(() => {
   setCollectibles(prevItems => prevItems.filter(item => {
     const itemRect = { ...item, width: ITEM_SIZE, height: ITEM_SIZE };
     if (checkCollision(player, itemRect)) {
+      soundManager.playSound('coin'); // Play coin collection sound
       setScore(s => s + item.points);
       return false;
     }
@@ -206,8 +226,10 @@ const gameTick = useCallback(() => {
       // Check collision with player
       const itemRect = { ...obstacle, y: obstacleY, width: BOMB_SIZE, height: BOMB_SIZE };
       if (checkCollision(player, itemRect)) {
+        soundManager.playSound('bomb'); // Play bomb/hit sound
         setLives(l => l - 1);
         if (lives - 1 <= 0) {
+          soundManager.playSound('gameOver'); // Play game over sound
           setGameActive(false);
           onGameEnd(score);
         }
