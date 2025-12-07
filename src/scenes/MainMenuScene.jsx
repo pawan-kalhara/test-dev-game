@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { getAvatar } from '../config/assetConfig.js';
+import soundManager from '../services/soundManager.js';
 
 export default function MainMenuScene({ 
   userName, 
@@ -12,10 +13,26 @@ export default function MainMenuScene({
   const [hoveredButton, setHoveredButton] = useState(null);
   const avatarConfig = currentAvatar ? getAvatar(currentAvatar) : null;
 
+  // Initialize sounds on component mount
+  useEffect(() => {
+    soundManager.initializeSounds();
+  }, []);
+
+  const handleButtonClick = (onClick) => {
+    soundManager.playSound('buttonClick');
+    onClick();
+  };
+
+  const handleButtonHover = (id) => {
+    setHoveredButton(id);
+    // Optional: Play a softer menu select sound on hover
+    // soundManager.playSound('menuSelect');
+  };
+
   const ButtonStyled = ({ id, label, onClick, hovered, icon }) => (
     <button
-      onClick={onClick}
-      onMouseEnter={() => setHoveredButton(id)}
+      onClick={() => handleButtonClick(onClick)}
+      onMouseEnter={() => handleButtonHover(id)}
       onMouseLeave={() => setHoveredButton(null)}
       className={`
         w-full px-8 py-6 text-3xl font-bold uppercase tracking-wider
