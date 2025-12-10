@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useGameLogic } from '../hooks/useGameLogic.jsx';
 import PuzzleModal from '../components/PuzzleModal.jsx';
 import { getAvatar, getCollectible, getObstacle } from '../config/assetConfig.js';
+import soundManager from '../services/soundManager.js';
+
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -9,7 +11,8 @@ const PLATFORM_HEIGHT = 20;
 const DOOR_WIDTH = 40;
 const DOOR_HEIGHT = 60;
 
-export default function GameScene({ difficulty, avatar, onGameEnd, onLogout }) {
+
+export default function GameScene({ difficulty, avatar, onGameEnd, onLogout, onMainMenu }) {
   const canvasRef = useRef(null);
   const { gameState, puzzle } = useGameLogic({ difficulty, onGameEnd });
   
@@ -17,21 +20,31 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout }) {
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const imagesRef = useRef({});
 
+
+  // Initialize sounds
+  useEffect(() => {
+    soundManager.initializeSounds();
+  }, []);
+
+
   // Load all images
-useEffect(() => {
-  const avatarConfig = getAvatar(avatar);
-  const collectibleConfig = getCollectible(gameState.levelData.collectibleType);
-  const obstacleConfig = getObstacle(gameState.levelData.obstacleType);
+  useEffect(() => {
+    const avatarConfig = getAvatar(avatar);
+    const collectibleConfig = getCollectible(gameState.levelData.collectibleType);
+    const obstacleConfig = getObstacle(gameState.levelData.obstacleType);
 
-  const images = {
-    avatar: new Image(),
-    collectible: new Image(),
-    obstacle: new Image(),
-    background: new Image(), 
-  };
 
-  let loadedCount = 0;
-  const totalImages = 4;
+    const images = {
+      avatar: new Image(),
+      collectible: new Image(),
+      obstacle: new Image(),
+      background: new Image(), 
+    };
+
+
+    let loadedCount = 0;
+    const totalImages = 4;
+
 
     const onImageLoad = () => {
       loadedCount++;
@@ -39,6 +52,7 @@ useEffect(() => {
         setImagesLoaded(true);
       }
     };
+
 
     const onImageError = (type) => {
       console.warn(`Failed to load ${type} image, using fallback`);
@@ -48,28 +62,35 @@ useEffect(() => {
       }
     };
 
+
     images.avatar.onload = onImageLoad;
     images.avatar.onerror = () => onImageError('avatar');
     images.avatar.src = avatarConfig.image;
+
 
     images.collectible.onload = onImageLoad;
     images.collectible.onerror = () => onImageError('collectible');
     images.collectible.src = collectibleConfig.image;
 
+
     images.obstacle.onload = onImageLoad;
     images.obstacle.onerror = () => onImageError('obstacle');
     images.obstacle.src = obstacleConfig.image;
 
+
     images.background.onload = onImageLoad;
-images.background.onerror = () => onImageError('background');
-images.background.src = gameState.levelData.background || '';
+    images.background.onerror = () => onImageError('background');
+    images.background.src = gameState.levelData.background || '';
+
 
     imagesRef.current = images;
   }, [avatar, gameState.levelData.collectibleType, gameState.levelData.obstacleType]);
 
+
   // Draw loop
   useEffect(() => {
     if (!imagesLoaded) return;
+
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -81,19 +102,20 @@ images.background.src = gameState.levelData.background || '';
     
     let animationFrameId;
 
+
     const draw = () => {
-  ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  
-  // 1. Draw Background Image
-  if (imagesRef.current.background && 
-      imagesRef.current.background.complete && 
-      imagesRef.current.background.naturalWidth > 0) {
-    ctx.drawImage(imagesRef.current.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  } else {
-    // Fallback to solid color
-    ctx.fillStyle = gameState.levelData.backgroundColor || '#2d5016';
-    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-  }
+      ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      
+      // 1. Draw Background Image
+      if (imagesRef.current.background && 
+          imagesRef.current.background.complete && 
+          imagesRef.current.background.naturalWidth > 0) {
+        ctx.drawImage(imagesRef.current.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      } else {
+        // Fallback to solid color
+        ctx.fillStyle = gameState.levelData.backgroundColor || '#2d5016';
+        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      }
       
       // Ground line
       ctx.strokeStyle = '#000';
@@ -179,10 +201,13 @@ images.background.src = gameState.levelData.background || '';
         ctx.strokeRect(gameState.player.x, gameState.player.y, avatarConfig.size, avatarConfig.size);
       }
 
+
       animationFrameId = requestAnimationFrame(draw);
     };
 
+
     draw();
+
 
     return () => {
       if (animationFrameId) {
@@ -191,6 +216,7 @@ images.background.src = gameState.levelData.background || '';
     };
   }, [gameState, avatar, imagesLoaded]);
 
+
   if (!imagesLoaded) {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-gray-900">
@@ -198,6 +224,22 @@ images.background.src = gameState.levelData.background || '';
       </div>
     );
   }
+
+
+  // Fix: Ensure lives is never negative or 0 for repeat()
+  const safeLives = Math.max(1, gameState.lives);
+  const displayLives = gameState.lives > 0 ? gameState.lives : 0;
+
+  const handleExitClick = () => {
+    soundManager.playSound('buttonClick');
+    onMainMenu();
+  };
+
+  const handleLogoutClick = () => {
+    soundManager.playSound('buttonClick');
+    onLogout();
+  };
+
 
   return (
     <div className="w-full relative">
@@ -209,7 +251,7 @@ images.background.src = gameState.levelData.background || '';
           Score: {gameState.score}
         </div>
         <div className="text-xl font-bold text-red-500">
-          Lives: {'❤️'.repeat(gameState.lives)}
+          Lives: {'❤️'.repeat(safeLives)} {displayLives === 0 && '(Game Over)'}
         </div>
       </div>
       
@@ -221,11 +263,13 @@ images.background.src = gameState.levelData.background || '';
         tabIndex={-1}
       />
 
+
       <div className="mt-4 p-3 bg-gray-800 rounded-lg text-center">
         <p className="text-sm text-gray-300">
           🎮 Arrow Keys to move | Space to jump | Collect items | Avoid obstacles | Enter door!
         </p>
       </div>
+
 
       {puzzle.isActive && (
         <PuzzleModal 
@@ -235,12 +279,23 @@ images.background.src = gameState.levelData.background || '';
         />
       )}
 
-      <button 
-        onClick={onLogout} 
-        className="absolute top-4 right-50 px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 z-20"
-      >
-        Logout
-      </button>
+
+      {/* Top Right Buttons */}
+      <div className="absolute top-4 right-45 flex gap-3 z-20">
+        <button 
+          onClick={handleExitClick}
+          className="px-4 py-2 rounded-lg bg-orange-600 text-white text-sm font-semibold hover:bg-orange-700 transition-all"
+        >
+          EXIT
+        </button>
+        <button 
+          onClick={handleLogoutClick}
+          className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-semibold hover:bg-red-700 transition-all"
+        >
+          Logout
+        </button>
+      </div>
+
 
     </div>
   );
