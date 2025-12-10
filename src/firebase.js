@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCDnP_fTTptBzNIIdyqhnLd7ubmjBDt9Kw",
-  authDomain: "monkeyquest-2d-game.firebaseapp.com",
-  projectId: "monkeyquest-2d-game",
-  storageBucket: "monkeyquest-2d-game.firebasestorage.app",
-  messagingSenderId: "11649577414",
-  appId: "1:11649577414:web:ffbf63078143aa36f982c7",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 
 };
 
