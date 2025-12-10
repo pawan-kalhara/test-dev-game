@@ -202,6 +202,7 @@ import DifficultyScene from './scenes/DifficultyScene.jsx';
 import GameScene from './scenes/GameScene.jsx';
 import GameOverScene from './scenes/GameOverScene.jsx';
 import OptionsScene from './scenes/OptionsScene.jsx';
+import LeaderboardScene from './scenes/LeaderboardScene.jsx';
 
 export default function App() {
   const [scene, setScene] = useState('loading');
@@ -277,6 +278,10 @@ export default function App() {
     setScene('mainmenu');
   };
 
+  const handleLeaderboard = () => {
+  setScene('leaderboard');
+};
+
   const handleDifficultySelect = (diff) => {
     setDifficulty(diff);
     setScene('game');
@@ -308,6 +313,10 @@ export default function App() {
   const handleBackToMenu = () => {
     setScene('mainmenu');
   };
+
+  const handleMainMenu = () => {
+  setScene('mainmenu');
+};
 
   const handleLogout = async () => {
     try {
@@ -350,6 +359,7 @@ export default function App() {
             onStartGame={handleStartGame}
             onChangeAvatar={handleChangeAvatar}
             onOptions={handleOptions}
+            onLeaderboard={handleLeaderboard}
             onExit={handleExit}
           />
         );
@@ -363,6 +373,13 @@ export default function App() {
             onLogout={handleLogout}
           />
         );
+
+      case 'leaderboard':
+        return (
+          <LeaderboardScene
+            onBack={handleBackToMenu}
+          />
+      );
         
       case 'difficulty':
         return (
@@ -380,6 +397,7 @@ export default function App() {
             avatar={currentUser?.avatar}
             onGameEnd={handleGameEnd}
             onLogout={handleLogout}
+            onMainMenu={handleMainMenu}
           />
         );
         

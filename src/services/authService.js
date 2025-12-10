@@ -94,11 +94,17 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import {
+  query,
+  orderBy,
+  limit,
   doc,
   getDoc,
   setDoc,
   updateDoc,
+  collection,
+  getDocs,
 } from 'firebase/firestore';
+
 
 /**
  * Firebase-backed Authentication Service
@@ -107,10 +113,13 @@ import {
  * users/{uid} => { email, avatar, highScore }
  */
 
+
 const USERS_COLLECTION = 'users';
+
 
 // Helper to get user document reference
 const getUserDocRef = (uid) => doc(db, USERS_COLLECTION, uid);
+
 
 export const authService = {
   /**
@@ -323,6 +332,41 @@ export const authService = {
       return snap.data();
     } catch (error) {
       throw new Error('Failed to get user data: ' + error.message);
+    }
+  },
+
+  /**
+   * Get top N players by high score
+   * @param {number} limitCount - Number of top players to fetch
+   * @returns {Promise<Array>}
+   */
+  async getTopPlayers(limitCount = 3) {
+    try {
+      const usersRef = collection(db, USERS_COLLECTION);
+      
+      // Query users ordered by high score in descending order
+      const q = query(
+        usersRef,
+        orderBy('highScore', 'desc'),
+        limit(limitCount)
+      );
+      
+      const snapshot = await getDocs(q);
+      const players = [];
+      
+      snapshot.forEach((doc) => {
+        players.push({
+          uid: doc.id,
+          email: doc.data().email,
+          highScore: doc.data().highScore || 0,
+          avatar: doc.data().avatar
+        });
+      });
+      
+      return players;
+    } catch (error) {
+      console.error('Error fetching top players:', error);
+      return [];
     }
   }
 };
