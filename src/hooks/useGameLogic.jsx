@@ -3,6 +3,7 @@ import { fetchBananaPuzzle } from '../services/bananaApi.js';
 import { LEVELS } from '../config/levelConfig.js';
 import soundManager from '../services/soundManager.js';
 
+
 // Game constants
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 450;
@@ -13,12 +14,14 @@ const GRAVITY = 0.5;
 const JUMP_POWER = -12;
 const PLAYER_SPEED = 5;
 
+
 // Asset dimensions (match your images)
 const ITEM_SIZE = 20;
 const BOMB_SIZE = 20;
 const PLATFORM_HEIGHT = 20;
 const DOOR_WIDTH = 40;
 const DOOR_HEIGHT = 60;
+
 
 export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [currentLevel, setCurrentLevel] = useState(1);
@@ -39,12 +42,14 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [lives, setLives] = useState(3);
   const [gameActive, setGameActive] = useState(true);
 
+
   const [puzzle, setPuzzle] = useState({
     isActive: false,
     data: null,
     timer: 0,
     timerId: null,
   });
+
 
   const inputKeysRef = useRef(new Set());
 
@@ -85,6 +90,7 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
     setObstacles(nextLevelData.obstacles);
     setGameActive(true);
   };
+
 
   // --- Puzzle API Logic ---
   const triggerPuzzle = useCallback(() => {
@@ -153,8 +159,10 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
 const gameTick = useCallback(() => {
   if (!gameActive) return;
 
+
   setPlayer(prevPlayer => {
     let { x, y, dx, dy, onGround } = { ...prevPlayer };
+
 
     // --- 1. Input System ---
     const keys = inputKeysRef.current;
@@ -194,6 +202,7 @@ const gameTick = useCallback(() => {
     
     return { ...prevPlayer, x, y, dx, dy, onGround };
   });
+
 
   // --- 3. Collision System ---
   
@@ -241,13 +250,16 @@ const gameTick = useCallback(() => {
     }).filter(o => o !== null); // Remove null obstacles
   });
 
+
   // Door
   const doorRect = { ...levelData.door, width: DOOR_WIDTH, height: DOOR_HEIGHT };
   if (checkCollision(player, doorRect)) {
     triggerPuzzle();
   }
 
+
 }, [gameActive, player, lives, levelData, onGameEnd, score, triggerPuzzle]);
+
 
 
   // --- Input Event Listeners (Event-Driven) ---
@@ -267,6 +279,7 @@ const gameTick = useCallback(() => {
     
     // Start game loop timer
     const gameLoop = setInterval(gameTick, 1000 / 60); // 60 FPS
+
 
     return () => {
       // Cleanup
