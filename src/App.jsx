@@ -199,6 +199,7 @@ import RegisterScene from './scenes/RegisterScene.jsx';
 import MainMenuScene from './scenes/MainMenuScene.jsx';
 import AvatarScene from './scenes/AvatarScene.jsx';
 import DifficultyScene from './scenes/DifficultyScene.jsx';
+import ForgotPasswordScene from './scenes/ForgotPasswordScene.jsx';
 import GameScene from './scenes/GameScene.jsx';
 import GameOverScene from './scenes/GameOverScene.jsx';
 import OptionsScene from './scenes/OptionsScene.jsx';
@@ -340,6 +341,7 @@ export default function App() {
           <LoginScene
             onLoginSuccess={handleAuthSuccess}
             onGoToRegister={() => setScene('register')}
+            onForgotPassword={() => setScene('forgotPassword')}
           />
         );
         
@@ -350,6 +352,13 @@ export default function App() {
             onGoToLogin={() => setScene('login')}
           />
         );
+
+      case 'forgotPassword':
+        return (
+          <ForgotPasswordScene
+            onBack={() => setScene('login')}
+         />
+       );
         
       case 'mainmenu':
         return (
@@ -423,7 +432,8 @@ export default function App() {
         return (
           <LoginScene 
             onLoginSuccess={handleAuthSuccess} 
-            onGoToRegister={() => setScene('register')} 
+            onGoToRegister={() => setScene('register')}
+            onForgotPassword={() => setScene('forgotPassword')}
           />
         );
     }

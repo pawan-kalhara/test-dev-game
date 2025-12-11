@@ -106,18 +106,18 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout, onM
     const draw = () => {
       ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       
-      // 1. Draw Background Image
+      
       if (imagesRef.current.background && 
           imagesRef.current.background.complete && 
           imagesRef.current.background.naturalWidth > 0) {
         ctx.drawImage(imagesRef.current.background, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       } else {
-        // Fallback to solid color
+        
         ctx.fillStyle = gameState.levelData.backgroundColor || '#2d5016';
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       }
       
-      // Ground line
+      
       ctx.strokeStyle = '#000';
       ctx.lineWidth = 2;
       ctx.beginPath();
@@ -125,7 +125,7 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout, onM
       ctx.lineTo(CANVAS_WIDTH, 400);
       ctx.stroke();
       
-      // 2. Platforms
+      
       ctx.fillStyle = gameState.levelData.platformColor || '#8B4513';
       gameState.levelData.platforms.forEach(p => {
         ctx.fillRect(p.x, p.y, p.width, PLATFORM_HEIGHT);
@@ -134,7 +134,7 @@ export default function GameScene({ difficulty, avatar, onGameEnd, onLogout, onM
         ctx.strokeRect(p.x, p.y, p.width, PLATFORM_HEIGHT);
       });
       
-      // 3. Door
+     
       ctx.fillStyle = '#8B4513';
       ctx.fillRect(gameState.levelData.door.x, gameState.levelData.door.y, DOOR_WIDTH, DOOR_HEIGHT);
       ctx.strokeStyle = '#654321';
