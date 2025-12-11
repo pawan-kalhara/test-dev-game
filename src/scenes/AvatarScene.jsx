@@ -26,13 +26,13 @@ export default function AvatarScene({ currentAvatar, onAvatarSelect, onCancel, o
       backgroundColor: '#581c87' 
     }}
   >
-    {/* Semi-transparent overlay for better visibility */}
+    
     <div 
       className="absolute inset-0 bg-gradient-to-b from-green-900/60 via-green-700/60 to-green-900/60"
       style={{ zIndex: 0 }}
     />
 
-    {/* Content - needs to be above the overlay */}
+    
     <div className="relative z-10 flex flex-col items-center w-full">
       <h1 className="text-5xl font-bold text-white mb-4 drop-shadow-lg">
         Choose Your Character

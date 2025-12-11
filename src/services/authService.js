@@ -92,6 +92,7 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   query,
@@ -230,6 +231,27 @@ export const authService = {
         throw new Error('Sign-in popup was closed. Please try again.');
       } else if (error.code === 'auth/cancelled-popup-request') {
         throw new Error('Sign-in was cancelled.');
+      }
+      throw new Error(error.message);
+    }
+  },
+
+  /**
+   * Send password reset email
+   * @param {string} email - User's email address
+   * @returns {Promise<void>}
+   */
+  async sendPasswordReset(email) {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      console.log('✅ Password reset email sent to:', email);
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        throw new Error('No account found with this email address.');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Please enter a valid email address.');
+      } else if (error.code === 'auth/too-many-requests') {
+        throw new Error('Too many requests. Please try again later.');
       }
       throw new Error(error.message);
     }
