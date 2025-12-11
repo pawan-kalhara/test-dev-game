@@ -20,6 +20,7 @@ const PLATFORM_HEIGHT = 20;
 const DOOR_WIDTH = 40;
 const DOOR_HEIGHT = 60;
 
+
 export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [levelData, setLevelData] = useState(LEVELS[currentLevel]);
@@ -39,12 +40,14 @@ export const useGameLogic = ({ difficulty, onGameEnd }) => {
   const [lives, setLives] = useState(3);
   const [gameActive, setGameActive] = useState(true);
 
+
   const [puzzle, setPuzzle] = useState({
     isActive: false,
     data: null,
     timer: 0,
     timerId: null,
   });
+
 
   const inputKeysRef = useRef(new Set());
 
@@ -153,6 +156,7 @@ const handlePuzzleSubmit = (isCorrect, answer) => {
 const gameTick = useCallback(() => {
   if (!gameActive) return;
 
+
   setPlayer(prevPlayer => {
     let { x, y, dx, dy, onGround } = { ...prevPlayer };
 
@@ -194,6 +198,7 @@ const gameTick = useCallback(() => {
     
     return { ...prevPlayer, x, y, dx, dy, onGround };
   });
+
 
   // --- 3. Collision System ---
   
@@ -247,6 +252,7 @@ const gameTick = useCallback(() => {
     triggerPuzzle();
   }
 
+
 }, [gameActive, player, lives, levelData, onGameEnd, score, triggerPuzzle]);
 
 
@@ -267,6 +273,7 @@ const gameTick = useCallback(() => {
     
     // Start game loop timer (60 Frames per second)
     const gameLoop = setInterval(gameTick, 1000 / 60); 
+
 
     return () => {
       // Cleanup
